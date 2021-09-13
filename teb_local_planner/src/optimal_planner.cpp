@@ -165,6 +165,7 @@ void TebOptimalPlanner::registerG2OTypes()
   return;
 }
 
+
 /*
  * initialize g2o optimizer. Set solver settings here.
  * Return: pointer to new SparseOptimizer Object.

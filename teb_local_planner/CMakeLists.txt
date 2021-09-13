@@ -4,8 +4,9 @@ project(teb_local_planner)
 # Set to Release in order to speed up the program significantly
 set(CMAKE_BUILD_TYPE Release) #None, Debug, Release, RelWithDebInfo, MinSizeRel
 
+# Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD 14)
 endif()
 
 #if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -22,6 +23,7 @@ find_package(nav2_costmap_2d REQUIRED)
 find_package(nav2_util REQUIRED)
 #find_package(interactive_markers REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
@@ -33,6 +35,8 @@ find_package(tf2 REQUIRED)
 find_package(tf2_eigen REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(tf2_sensor_msgs REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 
@@ -66,6 +70,7 @@ set(EXTERNAL_LIBS ${Boost_LIBRARIES} ${SUITESPARSE_LIBRARIES} ${G2O_LIBRARIES})
 include_directories(
   include
   ${Boost_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
   ${EXTERNAL_INCLUDE_DIRS}
 )
 
@@ -93,6 +98,7 @@ set(ament_dependencies
     geometry_msgs
     nav_msgs
     rclcpp
+    sensor_msgs
     rclcpp_action
     rclcpp_lifecycle
     std_msgs
@@ -102,6 +108,7 @@ set(ament_dependencies
     tf2_eigen
     tf2_geometry_msgs
     tf2_ros
+    tf2_sensor_msgs
     visualization_msgs
     builtin_interfaces
 )
@@ -110,6 +117,7 @@ ament_target_dependencies(teb_local_planner
 )
 target_link_libraries(teb_local_planner
    ${EXTERNAL_LIBS}
+   ${EIGEN3_LIBRARIES}
 )
 
 target_compile_definitions(teb_local_planner PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")

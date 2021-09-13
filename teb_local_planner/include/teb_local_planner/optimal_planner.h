@@ -706,6 +706,7 @@ protected:
   std::shared_ptr<g2o::SparseOptimizer> initOptimizer();
     
 
+  
   // external objects (store weak pointers)
   const TebConfig* cfg_; //!< Config class that stores and manages all related parameters
   ObstContainer* obstacles_; //!< Store obstacles that are relevant for planning
