@@ -51,6 +51,7 @@
 #include "teb_local_planner/teb_config.h"
 #include "teb_local_planner/misc.h"
 
+#include <fstream>
 #include <rclcpp/logging.hpp>
 
 #include <exception>
@@ -84,6 +85,7 @@ public:
   EdgeVelocity()
   {
     this->resize(3); // Since we derive from a g2o::BaseMultiEdge, set the desired number of vertices
+    
   }
   
   /**

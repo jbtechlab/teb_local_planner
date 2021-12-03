@@ -696,6 +696,15 @@ protected:
    */
   void AddEdgesVelocityObstacleRatio();
   
+    
+  /**
+   * @brief Add switch reverse and forward drive switch
+   * @see EdgeTimeOptimal
+   * @see buildGraph
+   * @see optimizeGraph
+   */
+  void AddEdgesGearChange();
+
   //@}
   
   

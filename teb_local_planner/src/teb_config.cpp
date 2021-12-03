@@ -82,6 +82,8 @@ void TebConfig::declareParameters(const nav2_util::LifecycleNode::SharedPtr nh, 
   declare_parameter_if_not_declared(nh, name + "." + "wheelbase", rclcpp::ParameterValue(robot.wheelbase));
   declare_parameter_if_not_declared(nh, name + "." + "cmd_angle_instead_rotvel", rclcpp::ParameterValue(robot.cmd_angle_instead_rotvel));
   declare_parameter_if_not_declared(nh, name + "." + "is_footprint_dynamic", rclcpp::ParameterValue(robot.is_footprint_dynamic));
+  declare_parameter_if_not_declared(nh, name + "." + "gear_change_time", rclcpp::ParameterValue(robot.gear_change_time));
+  
 
   // GoalTolerance
   declare_parameter_if_not_declared(nh, name + "." + "free_goal_vel", rclcpp::ParameterValue(goal_tolerance.free_goal_vel));
@@ -129,6 +131,7 @@ void TebConfig::declareParameters(const nav2_util::LifecycleNode::SharedPtr nh, 
   declare_parameter_if_not_declared(nh, name + "." + "weight_adapt_factor", rclcpp::ParameterValue(optim.weight_adapt_factor));
   declare_parameter_if_not_declared(nh, name + "." + "obstacle_cost_exponent", rclcpp::ParameterValue(optim.obstacle_cost_exponent));
   declare_parameter_if_not_declared(nh, name + "." + "weight_velocity_obstacle_ratio", rclcpp::ParameterValue(optim.weight_velocity_obstacle_ratio));
+  declare_parameter_if_not_declared(nh, name + "." + "weight_gear_change", rclcpp::ParameterValue(optim.weight_gear_change));
 
   // Homotopy Class Planner
   declare_parameter_if_not_declared(nh, name + "." + "enable_homotopy_class_planning", rclcpp::ParameterValue(hcp.enable_homotopy_class_planning));
@@ -207,6 +210,7 @@ void TebConfig::loadRosParamFromNodeHandle(const nav2_util::LifecycleNode::Share
   nh->get_parameter_or(name + "." + "wheelbase", robot.wheelbase, robot.wheelbase);
   nh->get_parameter_or(name + "." + "cmd_angle_instead_rotvel", robot.cmd_angle_instead_rotvel, robot.cmd_angle_instead_rotvel);
   nh->get_parameter_or(name + "." + "is_footprint_dynamic", robot.is_footprint_dynamic, robot.is_footprint_dynamic);
+  nh->get_parameter_or(name + "." + "gear_change_time", robot.gear_change_time, robot.gear_change_time);
   
   // GoalTolerance
   nh->get_parameter_or(name + "." + "free_goal_vel", goal_tolerance.free_goal_vel, goal_tolerance.free_goal_vel);
@@ -254,6 +258,7 @@ void TebConfig::loadRosParamFromNodeHandle(const nav2_util::LifecycleNode::Share
   nh->get_parameter_or(name + "." + "weight_adapt_factor", optim.weight_adapt_factor, optim.weight_adapt_factor);
   nh->get_parameter_or(name + "." + "obstacle_cost_exponent", optim.obstacle_cost_exponent, optim.obstacle_cost_exponent);
   nh->get_parameter_or(name + "." + "weight_velocity_obstacle_ratio", optim.weight_velocity_obstacle_ratio, optim.weight_velocity_obstacle_ratio);
+  nh->get_parameter_or(name + "." + "weight_gear_change", optim.weight_gear_change, optim.weight_gear_change);
   
   // Homotopy Class Planner
   nh->get_parameter_or(name + "." + "enable_homotopy_class_planning", hcp.enable_homotopy_class_planning, hcp.enable_homotopy_class_planning);
@@ -353,6 +358,8 @@ void TebConfig::on_parameter_event_callback(
         robot.min_turning_radius = value.double_value;
       } else if (name == node_name + ".wheelbase") {
         robot.wheelbase = value.double_value;
+      } else if (name == node_name + ".gear_change_time") {
+        robot.gear_change_time = value.double_value;
       }
       // GoalTolerance
       // Obstacles
@@ -416,6 +423,8 @@ void TebConfig::on_parameter_event_callback(
         optim.weight_adapt_factor = value.double_value;
       } else if (name == node_name + ".obstacle_cost_exponent") {
         optim.obstacle_cost_exponent = value.double_value;
+      } else if (name == node_name + ".weight_gear_change") {
+        optim.weight_gear_change = value.double_value;
       }
       // Homotopy Class Planner
       else if (name == node_name + ".selection_cost_hysteresis") {

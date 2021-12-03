@@ -53,6 +53,7 @@
 #include <teb_local_planner/g2o_types/edge_dynamic_obstacle.h>
 #include <teb_local_planner/g2o_types/edge_via_point.h>
 #include <teb_local_planner/g2o_types/edge_prefer_rotdir.h>
+#include <teb_local_planner/g2o_types/edge_gear_change.h>
 
 #include <memory>
 #include <limits>
@@ -162,6 +163,7 @@ void TebOptimalPlanner::registerG2OTypes()
   factory->registerType("EDGE_DYNAMIC_OBSTACLE", std::make_shared<g2o::HyperGraphElementCreator<EdgeDynamicObstacle>>());
   factory->registerType("EDGE_VIA_POINT", std::make_shared<g2o::HyperGraphElementCreator<EdgeViaPoint>>());
   factory->registerType("EDGE_PREFER_ROTDIR", std::make_shared<g2o::HyperGraphElementCreator<EdgePreferRotDir>>());
+  factory->registerType("EDGE_GEAR_CHANGE", std::make_shared<g2o::HyperGraphElementCreator<EdgeGearChange>>());
   return;
 }
 
@@ -363,6 +365,7 @@ bool TebOptimalPlanner::buildGraph(double weight_multiplier)
   AddEdgesTimeOptimal();	
 
   AddEdgesShortestPath();
+
   
   if (cfg_->robot.min_turning_radius == 0 || cfg_->optim.weight_kinematics_turning_radius == 0)
     AddEdgesKinematicsDiffDrive(); // we have a differential drive robot
@@ -373,7 +376,9 @@ bool TebOptimalPlanner::buildGraph(double weight_multiplier)
 
   if (cfg_->optim.weight_velocity_obstacle_ratio > 0)
     AddEdgesVelocityObstacleRatio();
-    
+  
+  AddEdgesGearChange();
+
   return true;  
 }
 
@@ -1028,6 +1033,27 @@ void TebOptimalPlanner::AddEdgesVelocityObstacleRatio()
       edge->setInformation(information);
       edge->setParameters(*cfg_, robot_model_.get(), obstacle.get());
       optimizer_->addEdge(edge);
+    }
+  }
+}
+
+void TebOptimalPlanner::AddEdgesGearChange()
+{
+  if (cfg_->robot.max_vel_y == 0 || cfg_->robot.acc_lim_y == 0) // non-holonomic robot
+  {
+    Eigen::Matrix<double,1,1> information;
+    information.fill(cfg_->optim.weight_gear_change);
+    
+    // add the usual acceleration edge for each tuple of three teb poses
+    for (int i=0; i < teb_.sizePoses() - 2; ++i)
+    {
+      EdgeGearChange* gear_change_edge = new EdgeGearChange;
+      gear_change_edge->setVertex(0,teb_.PoseVertex(i));
+      gear_change_edge->setVertex(1,teb_.PoseVertex(i+1));
+      gear_change_edge->setVertex(2,teb_.PoseVertex(i+2));
+      gear_change_edge->setInformation(information);
+      gear_change_edge->setTebConfig(*cfg_);
+      optimizer_->addEdge(gear_change_edge);
     }
   }
 }
